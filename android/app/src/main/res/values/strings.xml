@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">VIDYA</string>
+    <string name="title_activity_main">VIDYA</string>
+    <string name="package_name">media.vidya.app</string>
+    <string name="custom_url_scheme">media.vidya.app</string>
+</resources>

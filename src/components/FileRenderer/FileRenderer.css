@@ -1,0 +1,118 @@
+.file-container {
+  width: 65%;
+  height: 66vh;
+}
+.file-container-download-button-container {
+  text-align: center;
+}
+.file-container-download-button,
+.file-container-action-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.8rem;
+  background-color: #e20044;
+  color: white;
+  cursor: pointer;
+  display: inline-block;
+  margin: 0.4rem;
+  text-decoration: none;
+  text-align: center;
+}
+.html-file-container {
+  width: 100%;
+  height: 90%;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.34);
+  border-radius: 1rem;
+}
+.html-file-container > * {
+  margin-left: 1.5rem;
+  margin-right: 1.5rem;
+}
+.file-container-download-button:disabled,
+.file-container-action-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.file-container-button-group {
+  text-align: center;
+}
+
+.file-container-file-name {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.file-container-html-warning {
+  font-weight: bold;
+  font-weight: bold;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.file-container-security-note,
+.file-container-pdf-fallback-text {
+  font-size: 0.9em;
+}
+
+.file-container-security-note {
+  color: #e20044;
+}
+
+.file-container-pdf-title {
+  font-weight: bold;
+  margin: 0 0 0.4rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.file-container-pdf-title-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.file-container-iframe {
+  border: none;
+  width: 100%;
+  height: 94%;
+}
+
+.file-container-pdf-fallback-text {
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.file-container-url-icon-container {
+  text-align: center;
+}
+
+.file-container-url-icon {
+  font-size: 1.5em;
+  color: #007bff;
+  cursor: pointer;
+  display: inline-block;
+  padding: 5px;
+}
+
+.file-container-url-text {
+  text-align: center;
+  font-size: 0.9em;
+  margin-top: 5px;
+  word-wrap: break-word;
+  max-width: 200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.file-container-error-text {
+  color: darkred;
+  font-weight: bold;
+  text-align: center;
+}
