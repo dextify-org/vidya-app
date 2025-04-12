@@ -12,7 +12,11 @@ import { AuthProvider } from "./context/AuthContext";
 import "./style.css";
 import axios from "./api/axiosInstance.js";
 import { SkeletonLoader } from "./assets/index.js";
+import { StatusBar, Style } from '@capacitor/status-bar';
 
+// In your app initialization:
+StatusBar.setOverlaysWebView({ overlay: false });
+StatusBar.setBackgroundColor({ color: '#FFFFFF' }); // Set to your app's background color
 const EXIT_ON_BACK_PATHS = ["/", "/login"];
 
 const AppContent = () => {
