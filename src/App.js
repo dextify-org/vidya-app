@@ -12,11 +12,10 @@ import { AuthProvider } from "./context/AuthContext";
 import "./style.css";
 import axios from "./api/axiosInstance.js";
 import { SkeletonLoader } from "./assets/index.js";
-import { StatusBar, Style } from '@capacitor/status-bar';
+import { StatusBar } from "@capacitor/status-bar";
 
-// In your app initialization:
 StatusBar.setOverlaysWebView({ overlay: false });
-StatusBar.setBackgroundColor({ color: '#FFFFFF' }); // Set to your app's background color
+StatusBar.setBackgroundColor({ color: "#FFFFFF" });
 const EXIT_ON_BACK_PATHS = ["/", "/login"];
 
 const AppContent = () => {
@@ -44,7 +43,6 @@ const AppContent = () => {
       const isShowingFirstStartUp = data === true;
 
       if (isShowingFirstStartUp || isOnExitPath) {
-        console.log("Condition met for exit. Exiting app.");
         CapacitorApp.exitApp();
       } else {
         navigate(-1);
@@ -52,7 +50,6 @@ const AppContent = () => {
     });
 
     return () => {
-      console.log("Removing back button listener.");
       listener.remove();
     };
   }, [location, navigate, data]);

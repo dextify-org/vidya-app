@@ -645,6 +645,8 @@ const VideoPlayer = ({
         onClick={handlePlayPause}
         crossOrigin="use-credentials"
         key={`${videoSource}-${LectureId}`}
+        playsInline
+        webkit-playsinline
       >
         {subtitles && subtitles.length > 0
           ? subtitles.map((subtitle, index) => (

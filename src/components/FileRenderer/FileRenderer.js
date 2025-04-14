@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { downloadFile } from "../FileUtils";
-import { Browser } from '@capacitor/browser';
+import { Browser } from "@capacitor/browser";
 import "./FileRenderer.css";
 import {
   FileArchiveSolid,
@@ -19,10 +19,10 @@ const FileRenderer = ({ fileType, fileSrc, fileName }) => {
   const [htmlError, setHtmlError] = useState(null);
   const handleDownload = async (url, name) => {
     try {
-     
-     const openCapacitorSite = async () => {
-  await Browser.open({ url: fileSrc });
-};
+      const openCapacitorSite = async () => {
+        await Browser.open({ url: fileSrc });
+      };
+      openCapacitorSite();
     } catch (error) {
       alert("An unexpected error occurred");
       console.error(error);
@@ -97,8 +97,7 @@ const FileRenderer = ({ fileType, fileSrc, fileName }) => {
                 <button
                   className="file-container-action-button"
                   onClick={() => {
-                    downloadFile(fileSrc, fileName);
-                    console.log(fileSrc, "button");
+                    handleDownload();
                   }}
                   disabled={loadingHtml}
                 >
