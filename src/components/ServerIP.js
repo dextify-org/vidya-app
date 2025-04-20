@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Preferences } from "@capacitor/preferences";
 import { updateCacheOnPreferenceChange } from "../api/axiosInstance";
 
-const ServerIP = () => {
+const ServerIP = ({ onSetIP }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -17,27 +17,22 @@ const ServerIP = () => {
     try {
       let ipAddress = serverIP.trim();
 
-      // Check if the address already has http:// or https:// prefix
       const hasProtocol =
         ipAddress.startsWith("http://") || ipAddress.startsWith("https://");
 
-      // Try different protocols if one isn't specified
       const urlsToTry = hasProtocol
         ? [ipAddress]
         : [`https://${ipAddress}`, `http://${ipAddress}`];
 
       let validUrl = null;
 
-      // Try each URL until one works
       for (const url of urlsToTry) {
         try {
           const response = await fetch(url, {
             method: "GET",
-            // Set a reasonable timeout for the request
             signal: AbortSignal.timeout(5000),
           });
 
-          // If we get any response (true or false), consider it valid
           if (
             response.ok ||
             response.status === 200 ||
@@ -48,19 +43,15 @@ const ServerIP = () => {
           }
         } catch (error) {
           console.log(`Failed to connect to ${url}:`, error);
-          // Continue to the next URL if this one failed
         }
       }
 
       if (validUrl) {
-        // Save the valid URL to preferences
-        await Preferences.set({ key: "IP", value: validUrl });
+        await onSetIP(validUrl);
         updateCacheOnPreferenceChange("IP", validUrl);
-        // Show success toast
         setToastMessage("Server connection successful!");
         setToastType("success");
         setShowToast(true);
-
         setTimeout(() => {
           window.location.href = "/";
         }, 1500);

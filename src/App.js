@@ -10,7 +10,7 @@ import { StatusBar, Style } from "@capacitor/status-bar";
 import { Capacitor } from "@capacitor/core";
 import axios from "./api/axiosInstance.js";
 import Background from "./components/Background/Background";
-import { SkeletonLoader } from "./assets/index.js";
+import SkeletonLoader from "./components/Loader/BookLoader.js";
 import { updateCacheOnPreferenceChange } from "./api/axiosInstance.js";
 import "./style.css";
 

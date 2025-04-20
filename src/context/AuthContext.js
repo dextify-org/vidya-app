@@ -69,6 +69,9 @@ export const AuthProvider = ({ children }) => {
         setToastMessage("Logged In");
         setToastType("success");
         setShowToast(true);
+        setCategoryNeedsUpdate((prev) => {
+          return prev + 1;
+        });
         setTimeout(() => {
           navigate("/");
         }, 1000);
