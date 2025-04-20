@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Toast from "./Toast/Toast";
 import { motion, AnimatePresence } from "framer-motion";
-import { Preferences } from "@capacitor/preferences";
 import { updateCacheOnPreferenceChange } from "../api/axiosInstance";
 
 const ServerIP = ({ onSetIP }) => {

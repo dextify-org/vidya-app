@@ -20,11 +20,11 @@ import {
   FileBlankSolid,
   Html,
   FilePdfSolid,
-  SkeletonLoader,
   VideoSolid,
   World,
   DotsVerticalRounded,
 } from "../assets";
+import Loader from "../components/Loader/Loader.js";
 import { useParams, useLocation } from "react-router-dom";
 import { Browser } from "@capacitor/browser";
 import FileRenderer from "../components/FileRenderer/FileRenderer.js";
@@ -643,7 +643,7 @@ const Player = () => {
   if (isLoading) {
     return (
       <div className="loading">
-        <SkeletonLoader />
+        <Loader />
       </div>
     );
   }

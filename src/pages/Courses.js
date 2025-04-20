@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import Cards from "../components/Cards/Cards";
-import { SkeletonLoader } from "../assets";
 import axios from "../api/axiosInstance";
 import PreNav from "../components/Navbar/PreNav";
 import { motion, AnimatePresence } from "framer-motion";
-
+import Loader from "../components/Loader/Loader";
 const Courses = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -36,7 +35,7 @@ const Courses = () => {
           transition={{ duration: 0.5, ease: "easeInOut" }}
           className="card-divs-wrap"
         >
-          {loading && <SkeletonLoader />}
+          {loading && <Loader />}
           {!loading &&
             courses &&
             courses.map((item, index) => (

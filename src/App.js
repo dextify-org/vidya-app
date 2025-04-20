@@ -10,11 +10,10 @@ import { StatusBar, Style } from "@capacitor/status-bar";
 import { Capacitor } from "@capacitor/core";
 import axios from "./api/axiosInstance.js";
 import Background from "./components/Background/Background";
-import SkeletonLoader from "./components/Loader/BookLoader.js";
+import Loader from "./components/Loader/Loader.js";
 import { updateCacheOnPreferenceChange } from "./api/axiosInstance.js";
 import "./style.css";
 
-// Lazy load components for better performance
 const FirstStartUp = lazy(() => import("./pages/FirstStartUp"));
 const AnimatedRoutes = lazy(() => import("./AnimatedRoutes"));
 const ServerIP = lazy(() => import("./components/ServerIP.js"));
@@ -24,7 +23,6 @@ const AuthProvider = lazy(() =>
   }))
 );
 
-// Initialize status bar configuration
 const initStatusBar = () => {
   const platform = Capacitor.getPlatform();
   if (platform === "ios") {
@@ -34,17 +32,15 @@ const initStatusBar = () => {
   StatusBar.setStyle({ style: Style.Light });
 };
 
-// Constants
 const EXIT_ON_BACK_PATHS = ["/", "/login"];
 const CACHE_KEY_FIRST_STARTUP = "first_startup_check";
 const CACHE_KEY_IP = "IP";
-const CACHE_EXPIRY = 60 * 60 * 1000; // 1 hour
+const CACHE_EXPIRY = 60 * 60 * 1000;
 
 const AppContent = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // States with proper loading indicators
   const [isFirstStartUp, setIsFirstStartUp] = useState(null);
   const [isServerIPSet, setIsServerIPSet] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -54,25 +50,20 @@ const AppContent = () => {
     showMainApp: false,
   });
 
-  // Check cache first, then preferences
   const checkCachedValue = async (key, defaultValue = null) => {
     try {
-      // Try to get from localStorage for web or preferences for native
       const cachedValue = localStorage.getItem(key);
 
       if (cachedValue) {
         const { value, timestamp } = JSON.parse(cachedValue);
-        // Check if cache is still valid
         if (Date.now() - timestamp < CACHE_EXPIRY) {
           return value;
         }
       }
 
-      // If cache miss or expired, get from preferences
       const { value } = await Preferences.get({ key });
 
       if (value) {
-        // Update cache
         localStorage.setItem(
           key,
           JSON.stringify({
@@ -109,7 +100,6 @@ const AppContent = () => {
         showMainApp: true,
       });
 
-      // This allows the app to finish rendering the main state before reload
       setTimeout(() => {
         window.location.href = "/";
       }, 100);
@@ -118,9 +108,7 @@ const AppContent = () => {
     }
   };
 
-  // Effect to initialize app state
   useEffect(() => {
-    // Initialize status bar
     if (Capacitor.isNativePlatform()) {
       initStatusBar();
     }
@@ -128,14 +116,11 @@ const AppContent = () => {
     const initApp = async () => {
       setIsLoading(true);
       try {
-        // Check server IP first
         const serverIP = await checkCachedValue(CACHE_KEY_IP);
         setIsServerIPSet(!!serverIP);
 
-        // If server IP is set, proceed to check first startup
         if (serverIP) {
           try {
-            // Check if we have a cached first startup value
             const cachedFirstStartup = await checkCachedValue(
               CACHE_KEY_FIRST_STARTUP
             );
@@ -143,11 +128,9 @@ const AppContent = () => {
             if (cachedFirstStartup !== null) {
               setIsFirstStartUp(cachedFirstStartup === "true");
             } else {
-              // Make API call to check first startup only if we don't have cached value
               const res = await axios.get("/");
               const isFirstStart = res.data;
 
-              // Cache the result
               localStorage.setItem(
                 CACHE_KEY_FIRST_STARTUP,
                 JSON.stringify({
@@ -180,7 +163,6 @@ const AppContent = () => {
     initApp();
   }, []);
 
-  // Effect to determine what to show based on state
   useEffect(() => {
     if (isLoading) {
       setAppState({
@@ -216,7 +198,6 @@ const AppContent = () => {
     });
   }, [isLoading, isServerIPSet, isFirstStartUp]);
 
-  // Effect for back button handling
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
 
@@ -234,49 +215,45 @@ const AppContent = () => {
     };
   }, [location, navigate, appState]);
 
-  // Loading state
   if (isLoading) {
     return (
       <>
         <Background />
         <div className="skeleton-container">
-          <SkeletonLoader />
+          <Loader />
         </div>
       </>
     );
   }
 
-  // Server IP setup state
   if (appState.showServerIP) {
     return (
       <>
         <Background />
-        <Suspense fallback={<SkeletonLoader />}>
+        <Suspense fallback={<Loader />}>
           <ServerIP onSetIP={updateServerIPAndReload} />
         </Suspense>
       </>
     );
   }
 
-  // First startup state
   if (appState.showFirstStartUp) {
     return (
       <>
         <Background />
-        <Suspense fallback={<SkeletonLoader />}>
+        <Suspense fallback={<Loader />}>
           <FirstStartUp />
         </Suspense>
       </>
     );
   }
 
-  // Main app state
   return (
     <Suspense
       fallback={
         <>
           <Background />
-          <SkeletonLoader />
+          <Loader />
         </>
       }
     >

@@ -11,9 +11,9 @@ import {
   Bookmark,
   PurchaseTag,
   Play,
-  SkeletonLoader,
   TrashAltSolid,
 } from "../assets";
+import Loader from "../components/Loader/Loader";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
@@ -234,7 +234,7 @@ const Dashboard = () => {
   if (errorData) {
     return <div>{errorData}</div>;
   } else if (loading) {
-    return <SkeletonLoader />;
+    return <Loader />;
   } else {
     return (
       <>
