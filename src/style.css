@@ -26,8 +26,8 @@
 
 body {
   background-color: #f8edeb;
-  margin: 0;
   padding: 0;
+  margin: 0;
   font-family: "Poppins", sans-serif;
   color: #45312d;
 }
@@ -1264,8 +1264,7 @@ select option {
 
 .modal-buttons {
   background: rgba(255, 255, 255, 0.5);
-  width: 8rem;
-  height: 2.5rem;
+  padding: 0.5rem 1.8rem;
   border-radius: 0.5rem;
   display: flex;
   justify-content: center;
@@ -1389,8 +1388,6 @@ select option {
   gap: 1rem;
 
   .modal-buttons {
-    width: 6rem;
-    height: 1.8rem;
     font-size: 0.8rem;
   }
 }
@@ -1714,7 +1711,7 @@ input[type="file"]::file-selector-button:hover {
   background-color: rgba(255, 255, 255, 0.34);
   border-radius: 0.5rem;
   min-width: 8rem;
-  max-width: 10rem;
+  padding: 0.5rem 1.5rem;
   height: 2.7rem;
   display: flex;
   justify-content: center;
@@ -1729,8 +1726,6 @@ input[type="file"]::file-selector-button:hover {
   bottom: 3%;
 
   .modal-buttons {
-    width: 8.64rem;
-    height: 2.7rem;
     font-size: 1rem;
   }
 }
@@ -3151,8 +3146,6 @@ video::-moz-media-controls {
   }
   .modal-buttons-group-user .modal-buttons {
     font-size: 1rem;
-    width: 7rem;
-    height: 2.1rem;
   }
   .change-password-button {
     width: 80%;
@@ -3398,6 +3391,9 @@ video::-moz-media-controls {
     width: 2rem;
     height: 2rem;
   }
+  .sidebar {
+    width: 30rem;
+  }
   .lectures {
     font-size: 1.5rem;
   }
@@ -3416,7 +3412,7 @@ video::-moz-media-controls {
     height: 3rem;
   }
   .user {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
   }
   .user > div {
     height: 4rem;
@@ -3424,8 +3420,7 @@ video::-moz-media-controls {
 
   .modal-buttons-group-user .modal-buttons {
     font-size: 1.2rem;
-    width: 7rem;
-    height: 2.1rem;
+
     padding: 0.5rem 1.5rem;
   }
   .change-password-button {
@@ -3514,10 +3509,7 @@ video::-moz-media-controls {
     width: 35rem;
     height: 30rem;
   }
-  .modal-buttons {
-    width: 10rem;
-    padding: 0.5rem;
-  }
+
   .add-folder-modal {
     width: 90vw;
     height: 40vh;
@@ -3679,6 +3671,7 @@ video::-moz-media-controls {
   .play-button {
     width: 10rem;
     height: 3rem;
+    font-size: 1.5rem;
   }
   .stats {
     display: none;
@@ -3738,7 +3731,9 @@ video::-moz-media-controls {
   .section-details {
     font-size: 1.7rem;
   }
-
+  .file-container-pdf-fallback-text {
+    font-size: 1.5rem;
+  }
   /* Dashboard Page */
 
   .inner-container {
@@ -3812,8 +3807,14 @@ video::-moz-media-controls {
       font-size: 1.8rem;
     }
     svg {
-      width: 2rem;
-      height: 2rem;
+      width: 3rem;
+      height: 3rem;
+    }
+  }
+  .close-button {
+    svg {
+      width: 3rem;
+      height: 3rem;
     }
   }
   .select-category-instructor-group {
@@ -3848,7 +3849,10 @@ video::-moz-media-controls {
     }
   }
   /* Settings Page   */
-
+  .modal {
+    max-width: 46rem;
+    width: 90%;
+  }
   .modal-buttons-group-user .modal-buttons {
     font-size: 1.8rem;
   }
@@ -3860,6 +3864,34 @@ video::-moz-media-controls {
   }
   select {
     font-size: 1.8rem;
+  }
+  .folder-div {
+    height: 5rem;
+    svg {
+      width: 3rem;
+      height: 3rem;
+    }
+  }
+  .folders-action-group > div {
+    height: 6rem;
+  }
+  .folder-plus,
+  .folder-refresh,
+  .icon-plus > svg {
+    width: 3rem;
+    height: 3rem;
+  }
+  .folder-plus {
+    svg {
+      width: 3rem;
+      height: 3rem;
+    }
+  }
+  .folder-refresh {
+    svg {
+      width: 3rem;
+      height: 3rem;
+    }
   }
   .add-folder-modal {
     height: 70vh;

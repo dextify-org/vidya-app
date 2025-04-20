@@ -72,11 +72,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
 }
 .file-container-pdf-title-left {
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex-shrink: 0;
 }
 .file-container-iframe {
   border: none;

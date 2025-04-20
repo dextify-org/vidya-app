@@ -12,7 +12,6 @@ import VideoPlayer from "../components/VideoPlayer/VideoPlayer.js";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext.js";
 import Toast from "../components/Toast/Toast.js";
-import { downloadFile } from "../components/FileUtils.js";
 import {
   CheckCircleSolid,
   ChevronRight,
@@ -27,6 +26,7 @@ import {
   DotsVerticalRounded,
 } from "../assets";
 import { useParams, useLocation } from "react-router-dom";
+import { Browser } from "@capacitor/browser";
 import FileRenderer from "../components/FileRenderer/FileRenderer.js";
 const ICON_MAP = {
   video: <VideoSolid />,
@@ -42,15 +42,12 @@ const secondsToMinutesRounded = (seconds) => {
 const LectureTypeIcon = memo(({ type }) => {
   return ICON_MAP[type.toLowerCase()] || <FileBlankSolid />;
 });
-const handleDownload = async (url, fileName) => {
+const handleDownload = async (url) => {
   try {
-    const result = await downloadFile(url, fileName);
-
-    if (result.success) {
-      alert("File downloaded successfully!");
-    } else {
-      alert(`Download failed: ${result.error}`);
-    }
+    const openCapacitorSite = async () => {
+      await Browser.open({ url });
+    };
+    openCapacitorSite();
   } catch (error) {
     alert("An unexpected error occurred");
     console.error(error);

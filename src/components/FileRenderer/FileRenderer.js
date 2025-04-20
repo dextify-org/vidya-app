@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { downloadFile } from "../FileUtils";
 import { Browser } from "@capacitor/browser";
 import "./FileRenderer.css";
 import {
@@ -17,7 +16,7 @@ const FileRenderer = ({ fileType, fileSrc, fileName }) => {
   const [htmlContent, setHtmlContent] = useState(null);
   const [loadingHtml, setLoadingHtml] = useState(false);
   const [htmlError, setHtmlError] = useState(null);
-  const handleDownload = async (url, name) => {
+  const handleDownload = async () => {
     try {
       const openCapacitorSite = async () => {
         await Browser.open({ url: fileSrc });
@@ -57,15 +56,6 @@ const FileRenderer = ({ fileType, fileSrc, fileName }) => {
   }, [isHtmlRenderingRequested, fileType, fileSrc]);
   const handleRenderHtml = () => {
     setIsHtmlRenderingRequested(true);
-  };
-
-  const handleDownloadHtml = () => {
-    const link = document.createElement("a");
-    link.href = fileSrc;
-    link.download = fileName || "html-file.html";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   const renderContent = () => {
@@ -151,7 +141,9 @@ const FileRenderer = ({ fileType, fileSrc, fileName }) => {
               <div className="file-container-button-group">
                 <button
                   className="file-container-action-button"
-                  onClick={handleDownloadHtml}
+                  onClick={() => {
+                    handleDownload();
+                  }}
                 >
                   Download HTML
                 </button>
@@ -178,7 +170,9 @@ const FileRenderer = ({ fileType, fileSrc, fileName }) => {
                 href={fileSrc}
                 download
                 className="file-container-download-button"
-                onClick={() => downloadFile(fileSrc, fileName)}
+                onClick={() => {
+                  handleDownload();
+                }}
               >
                 Download ZIP
               </a>
@@ -195,7 +189,12 @@ const FileRenderer = ({ fileType, fileSrc, fileName }) => {
               </div>
               <span className="file-container-pdf-fallback-text">
                 If you are unable to view the PDF, you can{" "}
-                <a href={fileSrc} download>
+                <a
+                  onClick={() => {
+                    handleDownload();
+                  }}
+                  style={{ color: "blue" }}
+                >
                   download it
                 </a>
                 .
@@ -218,7 +217,9 @@ const FileRenderer = ({ fileType, fileSrc, fileName }) => {
             <div className="file-container-url-icon-container">
               <span
                 className="file-container-url-icon"
-                onClick={() => window.open(fileSrc, "_blank")}
+                onClick={() => {
+                  handleDownload();
+                }}
                 title={`Open URL in new window: ${fileSrc}`}
               >
                 Open Link
@@ -236,8 +237,9 @@ const FileRenderer = ({ fileType, fileSrc, fileName }) => {
               {fileName || "Download File"}
             </span>
             <a
-              href={fileSrc}
-              download
+              onClick={() => {
+                handleDownload();
+              }}
               className="file-container-download-button"
             >
               Download File
