@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Browser } from "@capacitor/browser";
-import "./FileRenderer.css";
 import {
   FileArchiveSolid,
   FileBlankSolid,

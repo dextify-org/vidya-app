@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useState, useRef, useCallback, memo, useEffect } from "react";
+import { StatusBar } from "@capacitor/status-bar";
 import axios from "../../api/axiosInstance";
 import {
   Captions,
@@ -274,6 +275,7 @@ const VideoPlayer = ({
   initialVideoProgress,
   subtitles,
   deflang,
+  serverIP,
 }) => {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
@@ -541,12 +543,14 @@ const VideoPlayer = ({
 
     if (!document.fullscreenElement) {
       containerRef.current.requestFullscreen();
+      StatusBar.hide();
       setState((prev) => ({
         ...prev,
         isFullScreen: true,
       }));
     } else {
       document.exitFullscreen();
+      StatusBar.show();
       setState((prev) => ({
         ...prev,
         isFullScreen: false,
@@ -654,7 +658,7 @@ const VideoPlayer = ({
                 key={subtitle.pathId}
                 kind="subtitles"
                 label={subtitle.cleanedName || subtitle.language}
-                src={`${process.env.REACT_APP_API}/api/course/subtitle/${subtitle.pathId}`}
+                src={`${serverIP}/api/course/subtitle/${subtitle.pathId}`}
                 srcLang={subtitle.language}
               />
             ))

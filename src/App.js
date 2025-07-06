@@ -6,9 +6,9 @@ import {
 } from "react-router-dom";
 import { App as CapacitorApp } from "@capacitor/app";
 import { Preferences } from "@capacitor/preferences";
-import { StatusBar, Style } from "@capacitor/status-bar";
 import { Capacitor } from "@capacitor/core";
 import axios from "./api/axiosInstance.js";
+import { SafeArea } from "capacitor-plugin-safe-area";
 import Background from "./components/Background/Background";
 import Loader from "./components/Loader/Loader.js";
 import { updateCacheOnPreferenceChange } from "./api/axiosInstance.js";
@@ -22,15 +22,6 @@ const AuthProvider = lazy(() =>
     default: module.AuthProvider,
   }))
 );
-
-const initStatusBar = () => {
-  const platform = Capacitor.getPlatform();
-  if (platform === "ios") {
-    StatusBar.setOverlaysWebView({ overlay: false });
-  }
-  StatusBar.setBackgroundColor({ color: "#ffffff" });
-  StatusBar.setStyle({ style: Style.Light });
-};
 
 const EXIT_ON_BACK_PATHS = ["/", "/login"];
 const CACHE_KEY_FIRST_STARTUP = "first_startup_check";
@@ -49,7 +40,19 @@ const AppContent = () => {
     showFirstStartUp: false,
     showMainApp: false,
   });
-
+  SafeArea.getSafeAreaInsets().then((data) => {
+    const { insets } = data;
+    document.body.style.setProperty("--ion-safe-area-top", `${insets.top}px`);
+    document.body.style.setProperty(
+      "--ion-safe-area-right",
+      `${insets.right}px`
+    );
+    document.body.style.setProperty(
+      "--ion-safe-area-bottom",
+      `${insets.bottom}px`
+    );
+    document.body.style.setProperty("--ion-safe-area-left", `${insets.left}px`);
+  });
   const checkCachedValue = async (key, defaultValue = null) => {
     try {
       const cachedValue = localStorage.getItem(key);
@@ -109,10 +112,6 @@ const AppContent = () => {
   };
 
   useEffect(() => {
-    if (Capacitor.isNativePlatform()) {
-      initStatusBar();
-    }
-
     const initApp = async () => {
       setIsLoading(true);
       try {
@@ -128,7 +127,7 @@ const AppContent = () => {
             if (cachedFirstStartup !== null) {
               setIsFirstStartUp(cachedFirstStartup === "true");
             } else {
-              const res = await axios.get("/");
+              const res = await axios.get("/isFirstStartUp");
               const isFirstStart = res.data;
 
               localStorage.setItem(

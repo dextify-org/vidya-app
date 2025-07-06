@@ -96,6 +96,7 @@ export const AuthProvider = ({ children }) => {
         withCredentials: true,
       }
     );
+    await Preferences.remove({ key: "token" });
     setUser(null);
     setShowToast(false);
     navigate("/login");

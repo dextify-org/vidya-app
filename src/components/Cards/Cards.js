@@ -1,9 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import { Play } from "../../assets";
+import { useEffect, useState } from "react";
+import { Preferences } from "@capacitor/preferences";
 
 const Cards = ({ imgsrc, info, courseId }) => {
   const navigate = useNavigate();
-
+  const [serverIP, setServerIP] = useState(null);
+  useEffect(() => {
+    const server = async () => {
+      const { value } = await Preferences.get({ key: "IP" });
+      setServerIP(value);
+    };
+    server();
+  }, []);
   const handleCourse = () => {
     navigate(`/courses/${courseId}`);
   };
@@ -16,10 +25,7 @@ const Cards = ({ imgsrc, info, courseId }) => {
     <div className="cards">
       <div className="card-image" onClick={handlePlayer}>
         <img
-          src={
-            process.env.REACT_APP_API +
-            (imgsrc ? imgsrc : "/assets/placeholder.avif")
-          }
+          src={serverIP + (imgsrc ? imgsrc : "/assets/placeholder.avif")}
           alt=""
         />
         <div className="overlay-card">

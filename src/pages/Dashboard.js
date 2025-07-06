@@ -15,6 +15,7 @@ import {
 } from "../assets";
 import Loader from "../components/Loader/Loader";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState("difficult");
@@ -247,7 +248,12 @@ const Dashboard = () => {
             onClose={() => setShowToast(false)}
           />
         )}
-        <div className="inner-container">
+        <motion.div
+          initial={{ opacity: 0, x: -200 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 200 }}
+          className="inner-container"
+        >
           <div className="welcome-streak">
             <div className="welcome">
               <div className="welcome-heading">Welcome Back</div>
@@ -415,7 +421,7 @@ const Dashboard = () => {
               <div className="bookmark-tags-wrap">{renderedTabContent()}</div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </>
     );
   }

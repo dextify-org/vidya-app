@@ -2,6 +2,7 @@ import PreNav from "../components/Navbar/PreNav";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import axios from "../api/axiosInstance.js";
+import { Browser } from "@capacitor/browser";
 import {
   DotsVerticalRounded,
   Plus,
@@ -26,8 +27,11 @@ import {
   useCallback,
   useLayoutEffect,
 } from "react";
+import { Preferences } from "@capacitor/preferences";
+
 import Toast from "../components/Toast/Toast.js";
 import { useAuth } from "../context/AuthContext.js";
+import Loader from "../components/Loader/Loader.js";
 const ICON_MAP = {
   video: <VideoSolid />,
   pdf: <FilePdfSolid />,
@@ -99,11 +103,23 @@ const LectureItem = memo(
     setShowToast,
     onLectureClick,
     courseName,
+    serverIP,
+    token,
   }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isTagModalOpen, setIsTagModalOpen] = useState(false);
-
+    const handleDownload = async (fileSrc) => {
+      try {
+        const openCapacitorSite = async () => {
+          await Browser.open({ url: fileSrc });
+        };
+        openCapacitorSite();
+      } catch (error) {
+        alert("An unexpected error occurred");
+        console.error(error);
+      }
+    };
     const toggleDropdown = () => setIsOpen(!isOpen);
     const toggleMenu = (e) => {
       e.stopPropagation();
@@ -228,7 +244,7 @@ const LectureItem = memo(
                       </span>
                       <a
                         href={
-                          process.env.REACT_APP_API +
+                          serverIP +
                           "/api/course/content/" +
                           content?.[0]?.pathId
                         }
@@ -236,6 +252,13 @@ const LectureItem = memo(
                         target="_blank"
                         onClick={(e) => {
                           e.stopPropagation();
+                          handleDownload(
+                            serverIP +
+                              "/api/course/content/" +
+                              content?.[0]?.pathId +
+                              "?token=" +
+                              token
+                          );
                         }}
                       >
                         {content?.[0]?.originalName}
@@ -314,6 +337,7 @@ const IndividualCourses = () => {
   const [courseInstructors, setCourseInstructors] = useState(null);
   const [courseCategory, setCourseCategory] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] = useState(false);
   const [isAddInstructorModalOpen, setIsAddInstructorModalOpen] =
     useState(false);
@@ -331,10 +355,20 @@ const IndividualCourses = () => {
     showToast,
     setShowToast,
     setCategoryNeedsUpdate,
+    token,
   } = useAuth();
+  const [serverIP, setServerIP] = useState(null);
+  useEffect(() => {
+    const server = async () => {
+      const { value } = await Preferences.get({ key: "IP" });
+      setServerIP(value);
+    };
+    server();
+  }, []);
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const { data } = await axios.post(
           "/api/course/individual",
           { CourseId: id },
@@ -349,6 +383,7 @@ const IndividualCourses = () => {
         setCourseInstructors(
           data.course.instructors ? data.course.instructors : null
         );
+        setLoading(false);
       } catch (error) {
         console.error(error);
       }
@@ -637,92 +672,155 @@ const IndividualCourses = () => {
         <Toast
           message={toastMessage}
           type={toastType}
-          duration={3000}
+          duration={300000}
           onClose={() => setShowToast(false)}
         />
       )}
 
       <PreNav name={course?.cleanedName} />
-      <div className="course-instructor-info">
-        <div className="course-instructor-info-container">
-          <div className="top">
-            <div className="top-container">
-              <div className="course-instructor-title">
-                <div className="course-title-inner">
-                  <span>{course?.cleanedName || ""}</span>
-                  <span
-                    className="svg-div play-svg"
-                    onClick={() => navigate(`/course/play/${id}`)}
-                  >
-                    <Play />
-                  </span>
-                  <span className="svg-div pin-svg" onClick={handlePin}>
-                    <PinSolid />
-                  </span>
-                </div>
-                {role === "admin" && (
-                  <div className="edit-information">
-                    <div
-                      title="Edit Instructor"
-                      style={{ cursor: "pointer" }}
-                      className="svg-div"
-                      onClick={openModal}
-                    >
-                      <DotsVerticalRounded />
+      {loading && <Loader />}
+      {!loading && (
+        <motion.div
+          initial={{ opacity: 0, x: -200 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 200 }}
+        >
+          <div className="course-instructor-info">
+            <div className="course-instructor-info-container">
+              <div className="top">
+                <div className="top-container">
+                  <div className="course-instructor-title">
+                    <div className="course-title-inner">
+                      <span>{course?.cleanedName || ""}</span>
+                      <span
+                        className="svg-div play-svg"
+                        onClick={() => navigate(`/course/play/${id}`)}
+                      >
+                        <Play />
+                      </span>
+                      <span className="svg-div pin-svg" onClick={handlePin}>
+                        <PinSolid />
+                      </span>
                     </div>
+                    {role === "admin" && (
+                      <div className="edit-information">
+                        <div
+                          title="Edit Instructor"
+                          style={{ cursor: "pointer" }}
+                          className="svg-div"
+                          onClick={openModal}
+                        >
+                          <DotsVerticalRounded />
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
+              </div>
+              <div className="bottom">
+                <div className="bottom-container">
+                  <div className="instructor-section">
+                    Instructors :{" "}
+                    {courseInstructors?.map((instructor, index) => (
+                      <span
+                        onClick={() => navigate(`/instructor/${instructor.id}`)}
+                        key={instructor.id}
+                        className="featured-instructor-link"
+                      >
+                        {(index ? ", " : "") + instructor.name}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="category-bottom-container">
+                    <span className="drop-cap">Category : </span>
+                    <span
+                      onClick={() =>
+                        navigate(`/category/${course?.category?.id}`)
+                      }
+                      className="featured-instructor-link"
+                    >
+                      {course?.category?.category}
+                    </span>
+                  </div>
+                  <div className="description">
+                    <span className="drop-cap">Description : </span>
+                    {course?.description}
+                  </div>
+                  <div> {secondsToHoursRounded(course?.duration)}</div>
+                  <div>
+                    Progress :{" "}
+                    {course?.courseprogresses?.[0]?.progress
+                      ? `${course?.courseprogresses?.[0]?.progress}%`
+                      : ""}
+                  </div>
+                </div>
+              </div>
+              <div className="img-container course-info-image instructor-info-image">
+                <img
+                  src={serverIP + (course?.photo || "/assets/placeholder.avif")}
+                  alt=""
+                />
               </div>
             </div>
           </div>
-          <div className="bottom">
-            <div className="bottom-container">
-              <div className="instructor-section">
-                Instructors :{" "}
-                {courseInstructors?.map((instructor, index) => (
-                  <span
-                    onClick={() => navigate(`/instructor/${instructor.id}`)}
-                    key={instructor.id}
-                    className="featured-instructor-link"
-                  >
-                    {(index ? ", " : "") + instructor.name}
-                  </span>
+
+          <div className="content-heading">Course Content</div>
+          <div className="course-content">
+            <div className="course-section">
+              <div className="section-list">
+                {course?.sections.map((section) => (
+                  <div key={section.id} className="section-item-course">
+                    <SectionHeader
+                      sectionOrder={section.order}
+                      title={section.cleanedName}
+                      hasLectures={section.lectures.length > 0}
+                      isExpanded={expandedSections.has(section.id)}
+                      duration={section.duration}
+                      onToggle={() => toggleSection(section.id)}
+                      total={section.lectures.length}
+                      sectionRef={sectionRef}
+                      sectionId={section.id}
+                      referalData={referalData}
+                    />
+                    <AnimatePresence>
+                      {expandedSections.has(section.id) &&
+                        section.lectures.length > 0 && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="lectures-container"
+                          >
+                            {section.lectures.map((lecture, index) => (
+                              <LectureItem
+                                key={lecture.id}
+                                lectureId={lecture.id}
+                                lectureOrder={index + 1}
+                                sectionOrder={section.order}
+                                title={lecture.cleanedName}
+                                type={lecture.type}
+                                duration={lecture.duration}
+                                content={lecture.content}
+                                courseId={id}
+                                setToastMessage={setToastMessage}
+                                setToastType={setToastType}
+                                setShowToast={setShowToast}
+                                onLectureClick={handleLectureClick}
+                                courseName={course.cleanedName}
+                                serverIP={serverIP}
+                                token={token}
+                              />
+                            ))}
+                          </motion.div>
+                        )}
+                    </AnimatePresence>
+                  </div>
                 ))}
               </div>
-              <div className="category-bottom-container">
-                <span className="drop-cap">Category : </span>
-                <span
-                  onClick={() => navigate(`/category/${course?.category?.id}`)}
-                  className="featured-instructor-link"
-                >
-                  {course?.category?.category}
-                </span>
-              </div>
-              <div className="description">
-                <span className="drop-cap">Description : </span>
-                {course?.description}
-              </div>
-              <div> {secondsToHoursRounded(course?.duration)}</div>
-              <div>
-                Progress :{" "}
-                {course?.courseprogresses?.[0]?.progress
-                  ? `${course?.courseprogresses?.[0]?.progress}%`
-                  : ""}
-              </div>
             </div>
           </div>
-          <div className="img-container course-info-image instructor-info-image">
-            <img
-              src={
-                process.env.REACT_APP_API +
-                (course?.photo || "/assets/placeholder.avif")
-              }
-              alt=""
-            />
-          </div>
-        </div>
-      </div>
-
+        </motion.div>
+      )}
       <AnimatePresence>
         {isModalOpen && (
           <div className="modal-overlay">
@@ -849,7 +947,6 @@ const IndividualCourses = () => {
           </div>
         )}
       </AnimatePresence>
-
       <AnimatePresence>
         {isAddCategoryModalOpen && (
           <div className="modal-overlay add-category-overlay">
@@ -906,7 +1003,6 @@ const IndividualCourses = () => {
           </div>
         )}
       </AnimatePresence>
-
       <AnimatePresence>
         {isAddInstructorModalOpen && (
           <div className="modal-overlay add-instructor-overlay">
@@ -963,60 +1059,6 @@ const IndividualCourses = () => {
           </div>
         )}
       </AnimatePresence>
-
-      <div className="content-heading">Course Content</div>
-      <div className="course-content">
-        <div className="course-section">
-          <div className="section-list">
-            {course?.sections.map((section) => (
-              <div key={section.id} className="section-item-course">
-                <SectionHeader
-                  sectionOrder={section.order}
-                  title={section.cleanedName}
-                  hasLectures={section.lectures.length > 0}
-                  isExpanded={expandedSections.has(section.id)}
-                  duration={section.duration}
-                  onToggle={() => toggleSection(section.id)}
-                  total={section.lectures.length}
-                  sectionRef={sectionRef}
-                  sectionId={section.id}
-                  referalData={referalData}
-                />
-                <AnimatePresence>
-                  {expandedSections.has(section.id) &&
-                    section.lectures.length > 0 && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="lectures-container"
-                      >
-                        {section.lectures.map((lecture, index) => (
-                          <LectureItem
-                            key={lecture.id}
-                            lectureId={lecture.id}
-                            lectureOrder={index + 1}
-                            sectionOrder={section.order}
-                            title={lecture.cleanedName}
-                            type={lecture.type}
-                            duration={lecture.duration}
-                            content={lecture.content}
-                            courseId={id}
-                            setToastMessage={setToastMessage}
-                            setToastType={setToastType}
-                            setShowToast={setShowToast}
-                            onLectureClick={handleLectureClick}
-                            courseName={course.cleanedName}
-                          />
-                        ))}
-                      </motion.div>
-                    )}
-                </AnimatePresence>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
     </>
   );
 };

@@ -14,6 +14,7 @@ const InstructorInfo = ({
   toastMessage,
   toastType,
   showToast,
+  serverIP,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -141,7 +142,7 @@ const InstructorInfo = ({
           <div className="img-container-instructor">
             <img
               src={
-                process.env.REACT_APP_API +
+                serverIP +
                 (data.photo ? data.photo : "/assets/placeholder.avif")
               }
               alt=""

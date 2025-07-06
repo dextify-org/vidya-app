@@ -1,15 +1,24 @@
 import Navbar from "../components/Navbar/Navbar";
 import PreNav from "../components/Navbar/PreNav";
 import Cards from "../components/Cards/Cards";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "../api/axiosInstance";
-
+import Loader from "../components/Loader/Loader";
+import { Preferences } from "@capacitor/preferences";
 const CourseCategories = ({ category }) => {
   const [courses, setCourses] = useState(null);
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
+  const [serverIP, setServerIP] = useState(null);
+  useEffect(() => {
+    const server = async () => {
+      const { value } = await Preferences.get({ key: "IP" });
+      setServerIP(value);
+    };
+    server();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -21,10 +30,9 @@ const CourseCategories = ({ category }) => {
           { withCredentials: true }
         );
         setCourses(data);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching courses:", error);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -42,6 +50,8 @@ const CourseCategories = ({ category }) => {
         transition={{ duration: 1, ease: "easeInOut" }}
         className="card-divs-wrap"
       >
+        {" "}
+        {loading && <Loader />}
         {!loading &&
           courses &&
           courses.courses.map((item, index) => (
@@ -50,6 +60,7 @@ const CourseCategories = ({ category }) => {
               imgsrc={item?.photo}
               info={item.cleanedName}
               courseId={item.id}
+              serverIP={serverIP}
             />
           ))}
       </motion.div>

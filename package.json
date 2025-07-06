@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "vidya-app",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -8,22 +8,20 @@
     "@capacitor/browser": "^7.0.1",
     "@capacitor/cli": "^7.2.0",
     "@capacitor/core": "^7.2.0",
-    "@capacitor/device": "^7.0.1",
     "@capacitor/ios": "^7.2.0",
     "@capacitor/preferences": "^7.0.1",
     "@capacitor/status-bar": "^7.0.1",
-    "@capawesome/capacitor-android-edge-to-edge-support": "^7.1.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.7",
+    "capacitor-plugin-safe-area": "^4.0.0",
     "framer-motion": "^11.11.1",
     "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.3.1",
     "react-parallax-tilt": "^1.7.245",
     "react-router-dom": "^6.26.2",
-    "react-scan": "^0.2.8",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
@@ -50,5 +48,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5"
   }
 }

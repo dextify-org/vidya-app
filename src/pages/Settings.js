@@ -5,7 +5,10 @@ import Toast from "../components/Toast/Toast";
 import PreNav from "../components/Navbar/PreNav";
 import Admin from "../components/Settings/Admin";
 import { useAuth } from "../context/AuthContext";
+import { updateCacheOnPreferenceChange } from "../api/axiosInstance";
 import axios from "../api/axiosInstance";
+import { TrashAltSolid } from "../assets";
+import { Preferences } from "@capacitor/preferences";
 const Settings = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -15,6 +18,7 @@ const Settings = () => {
   const tabs = [
     { id: "profile", label: "Profile" },
     { id: "display", label: "Display" },
+    { id: "server", label: "Server" },
     ...(user?.role === "admin" ? [{ id: "admin", label: "Admin" }] : []),
   ];
 
@@ -60,6 +64,7 @@ const Settings = () => {
           <div style={{ height: "100%" }} key={activeTab}>
             {activeTab === "profile" && <ProfileSettings user={user} />}
             {activeTab === "display" && <DisplaySettings />}
+            {activeTab === "server" && <ServerSettings />}
             {activeTab === "admin" && user?.role === "admin" && <Admin />}
           </div>
         </div>
@@ -67,7 +72,65 @@ const Settings = () => {
     </>
   );
 };
+const ServerSettings = () => {
+  const [serverRemoveModal, setServerRemoveModal] = useState(false);
+  const [serverIP, setSereverIP] = useState("");
+  useEffect(() => {
+    const getServerIP = async () => {
+      const { value } = await Preferences.get({ key: "IP" });
+      setSereverIP(value);
+    };
+    getServerIP();
+  }, []);
+  const handleServerRemove = async () => {
+    await Preferences.remove({ key: "IP" });
 
+    localStorage.removeItem("IP");
+
+    await Preferences.remove({ key: "first_startup_check" });
+    localStorage.removeItem("first_startup_check");
+
+    updateCacheOnPreferenceChange("IP", null);
+
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 100);
+  };
+  return (
+    <div className="settings-content">
+      <div className="settings-title">Server</div>
+      <div className="folder-div">
+        <div className="folder-name-div">{serverIP}</div>
+        <span onClick={() => setServerRemoveModal(true)}>
+          <TrashAltSolid />
+        </span>
+      </div>
+      {serverRemoveModal && (
+        <div className="modal-overlay">
+          <div className="modal small-modal">
+            <div className="confiramation-dialog">
+              <div className="dialog-message">
+                Are you sure want to delete :
+              </div>
+              <div className="dialog-directory">{serverIP}</div>
+            </div>
+            <div className="confiramtion-button-group">
+              <div className="yes-button" onClick={handleServerRemove}>
+                Yes
+              </div>
+              <div
+                className="cancel-button"
+                onClick={() => setServerRemoveModal(false)}
+              >
+                Cancel
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 const ProfileSettings = ({ user }) => {
   const [newPass, setNewPass] = useState("");
   const [confirmNewPass, setConfirmNewPass] = useState("");

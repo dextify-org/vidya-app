@@ -81,7 +81,6 @@ const Search = () => {
     };
   }, [searchTerm]);
 
-  // Handle outside clicks
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -92,12 +91,10 @@ const Search = () => {
       }
     };
 
-    // Add event listener when search is shown
     if (showSearch) {
       document.addEventListener("mousedown", handleClickOutside);
     }
 
-    // Clean up event listener
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };

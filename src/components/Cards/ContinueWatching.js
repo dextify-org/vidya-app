@@ -1,7 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { Play } from "../../assets";
 
-const ContinueWatching = ({ imgsrc, lectureName, courseName, courseId }) => {
+const ContinueWatching = ({
+  imgsrc,
+  lectureName,
+  courseName,
+  courseId,
+  serverIP,
+}) => {
   const navigate = useNavigate();
   const handlePlayer = () => {
     navigate(`/course/play/${courseId}`);
@@ -13,7 +19,7 @@ const ContinueWatching = ({ imgsrc, lectureName, courseName, courseId }) => {
     <>
       <div className="cards">
         <div className="card-image" onClick={handlePlayer}>
-          <img src={process.env.REACT_APP_API + imgsrc} alt="" />
+          <img src={serverIP + imgsrc} alt="" />
           <div className="overlay-card">
             <div className="play-button-card">
               <Play />

@@ -87,7 +87,7 @@ const ServerIP = ({ onSetIP }) => {
             <div className="username-title">Server Address</div>
           </div>
           <div className="input-container">
-            <div className="username-label">
+            <div className="ip-label ">
               Enter server IP or domain (e.g., 192.168.1.1 or example.com)
             </div>
 

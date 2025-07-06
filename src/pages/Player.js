@@ -28,6 +28,7 @@ import Loader from "../components/Loader/Loader.js";
 import { useParams, useLocation } from "react-router-dom";
 import { Browser } from "@capacitor/browser";
 import FileRenderer from "../components/FileRenderer/FileRenderer.js";
+import { Preferences } from "@capacitor/preferences";
 const ICON_MAP = {
   video: <VideoSolid />,
   pdf: <FilePdfSolid />,
@@ -110,6 +111,7 @@ const LectureItem = memo(
     setShowToast,
     courseName,
     token,
+    serverIP,
   }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -253,7 +255,7 @@ const LectureItem = memo(
                       </span>
                       <a
                         href={
-                          process.env.REACT_APP_API +
+                          serverIP +
                           "/api/course/content/" +
                           content?.[0]?.pathId +
                           "?token=" +
@@ -264,7 +266,7 @@ const LectureItem = memo(
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDownload(
-                            process.env.REACT_APP_API +
+                            serverIP +
                               "/api/course/content/" +
                               content?.[0]?.pathId +
                               "?token=" +
@@ -339,6 +341,7 @@ const Player = () => {
   const [expandedSections, setExpandedSections] = useState(new Set([0]));
   const [completedLectures, setCompletedLectures] = useState(new Set([]));
   const [completedSections, setCompletedSections] = useState(new Set([]));
+  const [serverIP, setServerIP] = useState(null);
   const [subtitles, setSubtitles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -358,7 +361,13 @@ const Player = () => {
     showToast,
     token,
   } = useAuth();
-
+  useEffect(() => {
+    const server = async () => {
+      const { value } = await Preferences.get({ key: "IP" });
+      setServerIP(value);
+    };
+    server();
+  }, []);
   const location = useLocation();
   const referalData = location.state;
   const handleNowPlaying = (lectureId) => {
@@ -483,9 +492,10 @@ const Player = () => {
     });
   }, []);
 
-  const createLectureDictionary = (data) => {
+  const createLectureDictionary = async (data) => {
     const lectureDict = {};
     let prevLectureId = null;
+    const { value } = await Preferences.get({ key: "IP" });
     const completedLectureIds = new Set();
     data.sections.forEach((section, sectionIndex) => {
       section.lectures.forEach((lecture, lectureIndex) => {
@@ -511,8 +521,8 @@ const Player = () => {
         lectureDict[currentLectureId] = {
           url:
             lecture.type === "video"
-              ? `${process.env.REACT_APP_API}/api/course/stream/${lecture.id}?token=${token}`
-              : `${process.env.REACT_APP_API}/api/course/download/${lecture.id}?token=${token}`,
+              ? `${value}/api/course/stream/${lecture.id}?token=${token}`
+              : `${value}/api/course/download/${lecture.id}?token=${token}`,
           next: nextLectureId,
           prev: isFirstLectureInCourse ? null : prevLectureId,
           progress: lecture.lectureprogresses || [],
@@ -542,13 +552,12 @@ const Player = () => {
         );
         setCourseData(newData.data[0]);
         setError(null);
-        setLectureDictionary(createLectureDictionary(newData.data[0]));
+        const dict = await createLectureDictionary(newData.data[0]);
+        setLectureDictionary(dict);
         setDefLang(newData.data[1].deflang);
       } catch (err) {
         setError(err.message);
         console.error("Error fetching course data:", err);
-      } finally {
-        setIsLoading(false);
       }
     };
     fetchData();
@@ -567,8 +576,10 @@ const Player = () => {
           lectureDictionary[initiallecture]?.progress?.[0]?.progress
         );
       }
-      if (lectureDictionary && !isLoading) {
+
+      if (lectureDictionary) {
         setTotalLectures(Object.keys(lectureDictionary).length);
+        setIsLoading(false);
       }
     };
     initialload();
@@ -662,9 +673,14 @@ const Player = () => {
         name={courseData?.cleanedName}
         progress={(completedLectures.size / totalLectures).toFixed(2) + "%"}
       />
-      <div className="player-container">
-        {lectureDictionary[nowPlaying]?.type &&
-        lectureDictionary[nowPlaying]?.type === "video" ? (
+      <motion.div
+        initial={{ opacity: 0, x: -200 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: 200 }}
+        className="player-container"
+      >
+        {lectureDictionary?.[nowPlaying]?.type &&
+        lectureDictionary?.[nowPlaying]?.type === "video" ? (
           <VideoPlayer
             videoSource={currentVideo}
             initialVideoProgress={initialVideoProgress}
@@ -679,12 +695,13 @@ const Player = () => {
             CourseId={id}
             subtitles={subtitles}
             deflang={defLang}
+            serverIP={serverIP}
           />
         ) : (
           <FileRenderer
             fileType={lectureDictionary?.[nowPlaying]?.type}
             fileSrc={currentVideo}
-            fileName={lectureDictionary[nowPlaying]?.cleanedName}
+            fileName={lectureDictionary?.[nowPlaying]?.cleanedName}
           />
         )}
 
@@ -731,6 +748,7 @@ const Player = () => {
                           setShowToast={setShowToast}
                           courseName={courseData.cleanedName}
                           token={token}
+                          serverIP={serverIP}
                         />
                       ))}
                     </motion.div>
@@ -739,7 +757,7 @@ const Player = () => {
             </div>
           ))}
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };

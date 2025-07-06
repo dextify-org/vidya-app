@@ -7,6 +7,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import axios from "../api/axiosInstance";
 import Toast from "../components/Toast/Toast.js";
 import { useAuth } from "../context/AuthContext";
+import Loader from "../components/Loader/Loader.js";
+import { Preferences } from "@capacitor/preferences";
+
 const IndividualInstrucor = () => {
   const { id } = useParams();
 
@@ -17,6 +20,7 @@ const IndividualInstrucor = () => {
   const [updateCounter, setUpdateCounter] = useState(0);
   const [file, setFile] = useState(null);
   const [role, setRole] = useState("");
+  const [loading, setLoading] = useState(true);
   const {
     toastMessage,
     setToastMessage,
@@ -25,11 +29,20 @@ const IndividualInstrucor = () => {
     showToast,
     setShowToast,
   } = useAuth();
+  const [serverIP, setServerIP] = useState(null);
+  useEffect(() => {
+    const server = async () => {
+      const { value } = await Preferences.get({ key: "IP" });
+      setServerIP(value);
+    };
+    server();
+  }, []);
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
   useEffect(() => {
-    const fetachData = async () => {
+    const fetchData = async () => {
       try {
+        setLoading(true);
         const { data } = await axios.post(
           "/api/instructor/individual",
           { InstructorId: id },
@@ -39,11 +52,12 @@ const IndividualInstrucor = () => {
         setInstructorTitle(data.name);
         setInstructorDescription(data.description || "");
         setRole(data.role);
+        setLoading(false);
       } catch (error) {
         console.error(error);
       }
     };
-    fetachData();
+    fetchData();
   }, [updateCounter]);
   const formatTime = (duration) => {
     if (duration < 60) {
@@ -111,46 +125,66 @@ const IndividualInstrucor = () => {
       )}
 
       <PreNav name={instructorsData?.name} />
-      <div className="course-instructor-info">
-        <div className="course-instructor-info-container">
-          <div className="top">
-            <div className="top-container">
-              <div className="course-instructor-title">
-                {instructorsData?.name}
-                <div className="edit-information">
-                  {role && role === "admin" && (
-                    <div
-                      style={{ cursor: "pointer" }}
-                      className="svg-div"
-                      onClick={openModal}
-                    >
-                      <DotsVerticalRounded />
+      {loading && <Loader />}
+      {!loading && (
+        <motion.div
+          initial={{ opacity: 0, x: -200 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 200 }}
+        >
+          <div className="course-instructor-info">
+            <div className="course-instructor-info-container">
+              <div className="top">
+                <div className="top-container">
+                  <div className="course-instructor-title">
+                    {instructorsData?.name}
+                    <div className="edit-information">
+                      {role && role === "admin" && (
+                        <div
+                          style={{ cursor: "pointer" }}
+                          className="svg-div"
+                          onClick={openModal}
+                        >
+                          <DotsVerticalRounded />
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
+              <div className="bottom">
+                <div className="bottom-container">
+                  <div>Courses : {instructorsData?.courses?.length}</div>
+                  <div className="description">
+                    <span className="drop-cap">Description : </span>
+                    {instructorsData?.description}
+                  </div>
+                  <div>
+                    Duration: {formatTime(instructorsData?.totalCourseDuration)}
+                  </div>
+                </div>
+              </div>
+              <div className="img-container instructor-info-image">
+                <img src={serverIP + instructorsData?.photo} alt="" />
+              </div>
             </div>
           </div>
-          <div className="bottom">
-            <div className="bottom-container">
-              <div>Courses : {instructorsData?.courses?.length}</div>
-              <div className="description">
-                <span className="drop-cap">Description : </span>
-                {instructorsData?.description}
-              </div>
-              <div>
-                Duration: {formatTime(instructorsData?.totalCourseDuration)}
-              </div>
-            </div>
+
+          <div className="courses">Courses</div>
+
+          <div className="card-divs-wrap">
+            {instructorsData?.courses?.map((data) => (
+              <Cards
+                imgsrc={data.photo}
+                info={data.cleanedName}
+                courseId={data.id}
+                key={data.id}
+                serverIP={serverIP}
+              />
+            ))}
           </div>
-          <div className="img-container instructor-info-image">
-            <img
-              src={process.env.REACT_APP_API + instructorsData?.photo}
-              alt=""
-            />
-          </div>
-        </div>
-      </div>
+        </motion.div>
+      )}
       <AnimatePresence>
         {isModalOpen && (
           <div className="modal-overlay">
@@ -224,18 +258,6 @@ const IndividualInstrucor = () => {
           </div>
         )}
       </AnimatePresence>
-      <div className="courses">Courses</div>
-
-      <div className="card-divs-wrap">
-        {instructorsData?.courses?.map((data) => (
-          <Cards
-            imgsrc={data.photo}
-            info={data.cleanedName}
-            courseId={data.id}
-            key={data.id}
-          />
-        ))}
-      </div>
     </>
   );
 };

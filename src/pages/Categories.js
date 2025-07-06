@@ -6,11 +6,13 @@ import { Plus } from "../assets";
 import { useAuth } from "../context/AuthContext";
 import { motion } from "framer-motion";
 import Toast from "../components/Toast/Toast";
+import Loader from "../components/Loader/Loader";
 
 const Categories = () => {
   const [categoriesList, setCategoriesList] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newCategoryInput, setnewCategoryInput] = useState("");
+  const [loading, setLoading] = useState(true);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("Completed successfully");
   const [toastType, setToastType] = useState("success");
@@ -19,10 +21,12 @@ const Categories = () => {
   useEffect(() => {
     const fetchCategory = async () => {
       try {
+        setLoading(true);
         const { data } = await axios.get("/api/category/-1", {
           withCredentials: true,
         });
         setCategoriesList(data);
+        setLoading(false);
       } catch (error) {
         console.error(error);
       }
@@ -75,65 +79,68 @@ const Categories = () => {
       )}
       <PreNav name={"Categories"} />
 
-      <div className="categories-container">
-        {isAdmin && (
-          <div className="categories" onClick={() => setIsModalOpen(true)}>
-            <div className="new-category">
-              <Plus />
-              Add New Category
+      {loading && <Loader />}
+      {!loading && (
+        <div className="categories-container">
+          {isAdmin && (
+            <div className="categories" onClick={() => setIsModalOpen(true)}>
+              <div className="new-category">
+                <Plus />
+                Add New Category
+              </div>
             </div>
-          </div>
-        )}
-        {isModalOpen && (
-          <div className="modal-overlay">
-            <div className="modal small-modal">
-              <div className="add-user-modal">
-                <div className="modal-heading">Add new category</div>
-                <input
-                  type="text"
-                  className="input"
-                  value={newCategoryInput}
-                  onChange={(e) => setnewCategoryInput(e.target.value)}
-                />
-                <div className="modal-buttons-group-user">
-                  <motion.div
-                    className="modal-buttons"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    style={{ color: "#00a6a6" }}
-                    onClick={handleAddCategory}
-                  >
-                    Add
-                  </motion.div>
-                  <motion.div
-                    className="modal-buttons"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    style={{ color: "#45312d" }}
-                    onClick={() => setIsModalOpen(false)}
-                  >
-                    Cancel
-                  </motion.div>
+          )}
+          {isModalOpen && (
+            <div className="modal-overlay">
+              <div className="modal small-modal">
+                <div className="add-user-modal">
+                  <div className="modal-heading">Add new category</div>
+                  <input
+                    type="text"
+                    className="input"
+                    value={newCategoryInput}
+                    onChange={(e) => setnewCategoryInput(e.target.value)}
+                  />
+                  <div className="modal-buttons-group-user">
+                    <motion.div
+                      className="modal-buttons"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      style={{ color: "#00a6a6" }}
+                      onClick={handleAddCategory}
+                    >
+                      Add
+                    </motion.div>
+                    <motion.div
+                      className="modal-buttons"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      style={{ color: "#45312d" }}
+                      onClick={() => setIsModalOpen(false)}
+                    >
+                      Cancel
+                    </motion.div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
-        {categoriesList.map((e) => (
-          <CategoriesInfo
-            name={e.category}
-            categoryId={e.id}
-            setCategoriesList={setCategoriesList}
-            setCategoryNeedsUpdate={setCategoryNeedsUpdate}
-            categoryNeedsUpdate={categoryNeedsUpdate}
-            setShowToast={setShowToast}
-            setToastMessage={setToastMessage}
-            setToastType={setToastType}
-            key={e.id}
-            isAdmin={isAdmin}
-          />
-        ))}
-      </div>
+          )}
+          {categoriesList.map((e) => (
+            <CategoriesInfo
+              name={e.category}
+              categoryId={e.id}
+              setCategoriesList={setCategoriesList}
+              setCategoryNeedsUpdate={setCategoryNeedsUpdate}
+              categoryNeedsUpdate={categoryNeedsUpdate}
+              setShowToast={setShowToast}
+              setToastMessage={setToastMessage}
+              setToastType={setToastType}
+              key={e.id}
+              isAdmin={isAdmin}
+            />
+          ))}
+        </div>
+      )}
     </>
   );
 };

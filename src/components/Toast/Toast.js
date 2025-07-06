@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import "./Toast.css";
 import {
   CheckCircleSolid,
   ErrorCircleSolid,
@@ -26,8 +25,7 @@ const Toast = ({ message, type = "success", duration = 3000, onClose }) => {
 
   return isVisible ? (
     <div
-      onMouseEnter={() => setShowButton(true)}
-      onMouseLeave={() => setShowButton(false)}
+      onClick={() => setShowButton(!showButton)}
       className={`toast animate-in`}
     >
       <span className={`toast-icon ${type}`}>
