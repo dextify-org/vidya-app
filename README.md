@@ -32,7 +32,7 @@ This repository contains the **VIDYA mobile client** — an Android and iOS app 
 ## Install
 
 <p>
-  <a href="https://play.google.com/store/apps/details?id=media.vidya.app"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" height="60" style="vertical-align:middle" /></a><a href="https://apps.apple.com/app/vidya/id0000000000"><img alt="Download on the App Store" src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" height="42" style="margin-left:8px;vertical-align:middle" /></a>
+  <a href="https://play.google.com/store/apps/details?id=media.vidya.app"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" height="60" style="vertical-align:middle" /></a><a href="https://apps.apple.com/app/vidya/id0000000000"><img alt="Download on the App Store" src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" height="60" style="margin-left:8px;vertical-align:middle" /></a>
 </p>
 
 > Store listings are coming soon. Until then, use the options below.
