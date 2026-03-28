@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Preferences } from "@capacitor/preferences";
 const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+export const AuthProvider = ({ children, onServerUnreachable }) => {
   const [user, setUser] = useState(null);
   const [category, setCategory] = useState([]);
   const [categoryNeedsUpdate, setCategoryNeedsUpdate] = useState(1);
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
         const { data } = await axios.get(
           "/api/category/5",
 
-          { withCredentials: true }
+          { withCredentials: true },
         );
         setCategory(data);
       } catch (error) {
@@ -49,10 +49,15 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await axios.get("/api/auth/user", {
         withCredentials: true,
+        timeout: 5000,
       });
       setUser(response.data);
     } catch (error) {
-      setUser(null);
+      if (!error.response && onServerUnreachable) {
+        onServerUnreachable();
+      } else {
+        setUser(null);
+      }
     } finally {
       setLoading(false);
     }
@@ -94,7 +99,7 @@ export const AuthProvider = ({ children }) => {
       {},
       {
         withCredentials: true,
-      }
+      },
     );
     await Preferences.remove({ key: "token" });
     setUser(null);

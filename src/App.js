@@ -20,7 +20,7 @@ const ServerIP = lazy(() => import("./components/ServerIP.js"));
 const AuthProvider = lazy(() =>
   import("./context/AuthContext").then((module) => ({
     default: module.AuthProvider,
-  }))
+  })),
 );
 
 const EXIT_ON_BACK_PATHS = ["/", "/login"];
@@ -45,11 +45,11 @@ const AppContent = () => {
     document.body.style.setProperty("--ion-safe-area-top", `${insets.top}px`);
     document.body.style.setProperty(
       "--ion-safe-area-right",
-      `${insets.right}px`
+      `${insets.right}px`,
     );
     document.body.style.setProperty(
       "--ion-safe-area-bottom",
-      `${insets.bottom}px`
+      `${insets.bottom}px`,
     );
     document.body.style.setProperty("--ion-safe-area-left", `${insets.left}px`);
   });
@@ -72,7 +72,7 @@ const AppContent = () => {
           JSON.stringify({
             value,
             timestamp: Date.now(),
-          })
+          }),
         );
         return value;
       }
@@ -93,7 +93,7 @@ const AppContent = () => {
         JSON.stringify({
           value: newIP,
           timestamp: Date.now(),
-        })
+        }),
       );
 
       setIsServerIPSet(true);
@@ -121,7 +121,7 @@ const AppContent = () => {
         if (serverIP) {
           try {
             const cachedFirstStartup = await checkCachedValue(
-              CACHE_KEY_FIRST_STARTUP
+              CACHE_KEY_FIRST_STARTUP,
             );
 
             if (cachedFirstStartup !== null) {
@@ -135,7 +135,7 @@ const AppContent = () => {
                 JSON.stringify({
                   value: String(isFirstStart),
                   timestamp: Date.now(),
-                })
+                }),
               );
 
               await Preferences.set({
@@ -147,7 +147,13 @@ const AppContent = () => {
             }
           } catch (error) {
             console.error("Error checking first startup:", error);
-            setIsFirstStartUp(false);
+            if (!error.response) {
+              localStorage.removeItem(CACHE_KEY_FIRST_STARTUP);
+              await Preferences.remove({ key: CACHE_KEY_FIRST_STARTUP });
+              setIsServerIPSet(false);
+            } else {
+              setIsFirstStartUp(false);
+            }
           }
         }
       } catch (error) {
@@ -236,12 +242,36 @@ const AppContent = () => {
     );
   }
 
+  const handleServerUnreachable = async () => {
+    try {
+      localStorage.removeItem(CACHE_KEY_FIRST_STARTUP);
+      await Preferences.remove({ key: CACHE_KEY_FIRST_STARTUP });
+    } catch (e) {
+      console.error("Error clearing first startup cache:", e);
+    }
+    setIsServerIPSet(false);
+  };
+
+  const handleFirstStartUpComplete = async () => {
+    try {
+      const falseValue = JSON.stringify({
+        value: "false",
+        timestamp: Date.now(),
+      });
+      localStorage.setItem(CACHE_KEY_FIRST_STARTUP, falseValue);
+      await Preferences.set({ key: CACHE_KEY_FIRST_STARTUP, value: "false" });
+    } catch (e) {
+      console.error("Error clearing first startup cache:", e);
+    }
+    setIsFirstStartUp(false);
+  };
+
   if (appState.showFirstStartUp) {
     return (
       <>
         <Background />
         <Suspense fallback={<Loader />}>
-          <FirstStartUp />
+          <FirstStartUp onComplete={handleFirstStartUpComplete} />
         </Suspense>
       </>
     );
@@ -256,7 +286,7 @@ const AppContent = () => {
         </>
       }
     >
-      <AuthProvider>
+      <AuthProvider onServerUnreachable={handleServerUnreachable}>
         <Background />
         <AnimatedRoutes />
       </AuthProvider>

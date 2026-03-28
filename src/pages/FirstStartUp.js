@@ -137,7 +137,7 @@ const FileBrowser = ({ onSelect }) => {
       setLoading(true);
       setError(null);
       const response = await axios.get(
-        `/api/drive/browse?path=${encodeURIComponent(path)}`
+        `/api/drive/browse?path=${encodeURIComponent(path)}`,
       );
 
       if (!response.status === 200)
@@ -239,7 +239,7 @@ const FileBrowser = ({ onSelect }) => {
   );
 };
 
-const FirstStartUp = () => {
+const FirstStartUp = ({ onComplete }) => {
   const [currentTab, setCurrentTab] = useState(0);
   const [usernameInput, setUsernameInput] = useState("");
   const [passwordInput, setPasswordInput] = useState("");
@@ -255,10 +255,6 @@ const FirstStartUp = () => {
     { title: "Username" },
     { title: "Selected Folders" },
   ];
-  const handleHome = () => {
-    window.location.href = "/";
-    window.location.reload(true);
-  };
   const handleNext = () => {
     if (currentTab < tabs.length - 1) setCurrentTab(currentTab + 1);
     if (currentTab === 1) setDirection(-1);
@@ -311,14 +307,14 @@ const FirstStartUp = () => {
           password: passwordInput,
           folders: selectedFolders,
         },
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       if (response.status === 200) {
         setIsSubmitting(false);
         setShowToast(true);
         setTimeout(() => {
-          handleHome();
+          if (onComplete) onComplete();
         }, 2000);
       }
     } catch (error) {

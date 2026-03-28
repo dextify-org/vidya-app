@@ -1,70 +1,252 @@
-# Getting Started with Create React App
+<h1 align="center">VIDYA — Mobile App</h1>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<p align="center">
+  <strong>Android &amp; iOS client for the VIDYA self-hosted media platform</strong>
+</p>
 
-## Available Scripts
+<p align="center">
+  <a href="https://github.com/dextify-org/vidya-app/blob/main/LICENSE.txt">
+    <img alt="License: GPL v3" src="https://img.shields.io/badge/License-GPLv3-blue.svg" />
+  </a>
+  <a href="https://github.com/dextify-org/vidya-app/releases">
+    <img alt="GitHub release" src="https://img.shields.io/github/v/release/dextify-org/vidya-app?include_prereleases" />
+  </a>
+  <img alt="Platform" src="https://img.shields.io/badge/platform-Android%20%7C%20iOS-green" />
+  <img alt="Capacitor" src="https://img.shields.io/badge/Capacitor-7-119EFF?logo=capacitor" />
+  <a href="https://github.com/dextify-org/vidya-app/issues">
+    <img alt="GitHub issues" src="https://img.shields.io/github/issues/dextify-org/vidya-app" />
+  </a>
+</p>
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## About
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+This repository contains the **VIDYA mobile client** — an Android and iOS app built with [Capacitor 7](https://capacitorjs.com/) and React 18. It connects to a self-hosted [VIDYA server](https://github.com/dextify-org/vidya) running on your local network or any reachable host.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+> **This app requires a running VIDYA server.**
+> See the [VIDYA server repository](https://github.com/dextify-org/vidya) to set one up.
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Install
 
-### `npm run build`
+<p>
+  <a href="https://play.google.com/store/apps/details?id=media.vidya.app">
+    <img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" height="60" />
+  </a>
+  <a href="https://apps.apple.com/app/vidya/id0000000000">
+    <img alt="Download on the App Store" src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" height="42" style="margin-left:8px;margin-bottom:9px" />
+  </a>
+</p>
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+> Store listings are coming soon. Until then, use the options below.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Android
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Download the latest APK from the [Releases](https://github.com/dextify-org/vidya-app/releases) page and install it on your device.
 
-### `npm run eject`
+> You may need to enable **Install from unknown sources** in your device settings.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### iOS
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+iOS builds must be compiled from source using Xcode. See [Building for iOS](#building-for-ios) below.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Connecting to Your Server
 
-## Learn More
+On first launch the app will prompt for a server address. Enter the IP or hostname of the machine running VIDYA, including the port:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```
+http://192.168.1.10:31415
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+The address is saved in the app and can be changed later from the settings screen.
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Building from Source
 
-### Analyzing the Bundle Size
+### Prerequisites
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+| Tool           | Version                      |
+| -------------- | ---------------------------- |
+| Node.js        | 20+                          |
+| npm            | 10+                          |
+| Android Studio | Latest stable                |
+| JDK            | 17+                          |
+| Xcode          | 15+ (macOS only, iOS builds) |
+| CocoaPods      | Latest (iOS builds)          |
 
-### Making a Progressive Web App
+### Setup
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```bash
+git clone https://github.com/dextify-org/vidya-app.git
+cd vidya-app
+npm install
+```
 
-### Advanced Configuration
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### Building for Android
 
-### Deployment
+**1. Build the React web app**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```bash
+npm run build
+```
 
-### `npm run build` fails to minify
+**2. Sync with Capacitor**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```bash
+npx cap sync android
+```
+
+**3a. Open in Android Studio (recommended)**
+
+```bash
+npx cap open android
+```
+
+Then: **Build → Generate Signed Bundle / APK**
+
+**3b. Build a debug APK from the terminal**
+
+```bash
+cd android
+./gradlew assembleDebug
+```
+
+Output: `android/app/build/outputs/apk/debug/app-debug.apk`
+
+**3c. Build a release APK from the terminal**
+
+```bash
+cd android
+./gradlew assembleRelease
+```
+
+> A keystore is required for release builds. Configure it in `android/app/build.gradle` under `signingConfigs`.
+
+---
+
+### Building for iOS
+
+> macOS with Xcode 15+ is required.
+
+**1. Build the React web app**
+
+```bash
+npm run build
+```
+
+**2. Sync with Capacitor**
+
+```bash
+npx cap sync ios
+```
+
+**3. Open in Xcode**
+
+```bash
+npx cap open ios
+```
+
+In Xcode:
+
+- Select your development team under **Signing & Capabilities**
+- Verify the Bundle Identifier is `media.vidya.app`
+- Choose **Product → Archive** to create a distributable build
+
+---
+
+### Live Reload (Development)
+
+To run the app against a local dev server with hot reload:
+
+```bash
+npm start   # starts React dev server on :3000
+```
+
+Then update `capacitor.config.ts` to point to your machine's IP:
+
+```ts
+server: {
+  url: "http://192.168.1.x:3000",
+  cleartext: true,
+}
+```
+
+Then sync and run:
+
+```bash
+npx cap sync
+npx cap run android   # or ios
+```
+
+> Revert `capacitor.config.ts` before creating a production build.
+
+---
+
+## Tech Stack
+
+| Library                    | Version | Purpose                   |
+| -------------------------- | ------- | ------------------------- |
+| React                      | 18      | UI framework              |
+| React Router               | 6       | Client-side routing       |
+| Capacitor                  | 7       | Native Android/iOS bridge |
+| Framer Motion              | 11      | Animations                |
+| React Chart.js 2           | 5       | Dashboard charts          |
+| Axios                      | 1       | HTTP client               |
+| capacitor-plugin-safe-area | 4       | Safe area insets          |
+
+---
+
+## Project Structure
+
+```
+vidya-app/
+├── src/
+│   ├── api/              ← Axios instance configuration
+│   ├── assets/           ← Fonts, images, icons
+│   ├── components/       ← Shared UI components
+│   ├── context/          ← React context (Auth, etc.)
+│   ├── App.js            ← Root component and routing
+│   └── index.js          ← Entry point
+├── public/               ← HTML shell
+├── android/              ← Android native project (Capacitor)
+├── ios/                  ← iOS native project (Capacitor)
+└── capacitor.config.ts   ← Capacitor configuration
+```
+
+---
+
+## Contributing
+
+1. Fork this repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Commit your changes: `git commit -m 'Add my feature'`
+4. Push: `git push origin feature/my-feature`
+5. Open a Pull Request against `main`
+
+**Bug reports:** [GitHub Issues](https://github.com/dextify-org/vidya-app/issues)
+
+---
+
+## Related Repositories
+
+| Repo                                                              | Description                                        |
+| ----------------------------------------------------------------- | -------------------------------------------------- |
+| [dextify-org/vidya](https://github.com/dextify-org/vidya)         | VIDYA server + web client (Docker, Windows, Linux) |
+| [dextify-org/vidya-app](https://github.com/dextify-org/vidya-app) | This repository — Android & iOS mobile client      |
+
+---
+
+## License
+
+VIDYA App is free software licensed under the **GNU General Public License v3.0**.
+
+You may redistribute and/or modify it under the terms of the GPL as published by the Free Software Foundation. This program is distributed **without any warranty**. See the [LICENSE](./LICENSE.txt) file or <https://www.gnu.org/licenses/> for details.
+
+Copyright © 2026 [DEXTIFY](https://github.com/dextify-org)
