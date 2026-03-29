@@ -3,7 +3,9 @@
 <p align="center">
   <strong>Android &amp; iOS client for the VIDYA self-hosted media platform</strong>
 </p>
-
+<p align="center">
+  <img width="100%" alt="Banner image" src="https://github.com/user-attachments/assets/5d87062c-9366-4f47-8e23-91ca905906a8" />
+</p>
 <p align="center">
   <a href="https://github.com/dextify-org/vidya-app/blob/main/LICENSE.txt">
     <img alt="License: GPL v3" src="https://img.shields.io/badge/License-GPLv3-blue.svg" />
@@ -32,12 +34,8 @@ This repository contains the **VIDYA mobile client** — an Android and iOS app 
 ## Install
 
 <p>
-  <a href="https://play.google.com/store/apps/details?id=media.vidya.app">
-    <img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" height="60" />
-  </a>
-  <a href="https://apps.apple.com/app/vidya/id0000000000">
-    <img alt="Download on the App Store" src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" height="42" style="margin-left:8px;margin-bottom:9px" />
-  </a>
+  <a href="https://play.google.com/store/apps/details?id=media.vidya.app"><img alt="Get it on Google Play" src="https://github.com/user-attachments/assets/7c90cc81-7568-4191-9e52-62b0592e67be" height="60" style="vertical-align:middle" /></a>
+  <a href="https://apps.apple.com/app/vidya/id000000000"><img alt="Download on the App Store" src="https://github.com/user-attachments/assets/dee33522-0b39-4649-be71-eedff9dc219c" height="60" style="margin-left:8px;vertical-align:middle" /></a>
 </p>
 
 > Store listings are coming soon. Until then, use the options below.
