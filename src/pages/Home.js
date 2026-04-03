@@ -31,8 +31,8 @@ const Home = ({ category }) => {
       `/course/play/${
         homeData?.featuredCourse
           ? homeData.featuredCourse.id
-          : homeData.latestCourse[1].id
-      }`
+          : homeData.latestCourse[0].id
+      }`,
     );
   const formatTime = (duration) => {
     if (duration < 60) {
@@ -54,7 +54,7 @@ const Home = ({ category }) => {
         homeData?.featuredCourse
           ? homeData.featuredCourse.id
           : homeData.latestCourse[0].id
-      }`
+      }`,
     );
   };
   const handleInstructor = (id) => {
@@ -93,10 +93,26 @@ const Home = ({ category }) => {
         setIsLoading(false);
       } catch (error) {
         console.error(error);
+        setIsLoading(false);
       }
     };
     fetchData();
   }, []);
+  const rawStats = homeData?.categoryWatchTime?.categoryWatchtime;
+  const topCategoryStats = rawStats
+    ? (() => {
+        const sorted = [...rawStats].sort((a, b) => b.watchtime - a.watchtime);
+        const top5 = sorted.slice(0, 5);
+        const rest = sorted.slice(5);
+        if (rest.length > 0) {
+          top5.push({
+            category: "Others",
+            watchtime: rest.reduce((sum, item) => sum + item.watchtime, 0),
+          });
+        }
+        return top5;
+      })()
+    : null;
   const statsColor = [
     "#605F5E",
     "#FB3640",
@@ -169,9 +185,7 @@ const Home = ({ category }) => {
                 </div>
               </div>
               <Tilt className="stats" perspective={4000}>
-                <Stats
-                  watchtimeData={homeData?.categoryWatchTime?.categoryWatchtime}
-                />
+                <Stats watchtimeData={topCategoryStats} />
                 <div className="watch">
                   <div className="watch-hours">WATCH TIME</div>
                   <div className="hours">
@@ -179,23 +193,22 @@ const Home = ({ category }) => {
                   </div>
                 </div>
                 <div className="labels">
-                  {homeData?.categoryWatchTime &&
-                    homeData?.categoryWatchTime?.categoryWatchtime?.map(
-                      (item, index) => (
-                        <div className="label-names" key={index}>
-                          <div
-                            className="rectangle"
-                            style={{ backgroundColor: statsColor[index] }}
-                          ></div>
-                          {item.category} -{" "}
-                          {(
-                            item.watchtime /
-                            homeData?.categoryWatchTime?.totalWatchtime
-                          ).toFixed(2) * 100}{" "}
-                          %
-                        </div>
-                      )
-                    )}
+                  {topCategoryStats &&
+                    topCategoryStats.map((item, index) => (
+                      <div className="label-names" key={index}>
+                        <div
+                          className="rectangle"
+                          style={{ backgroundColor: statsColor[index] }}
+                        ></div>
+                        {item.category} -{" "}
+                        {(
+                          (item.watchtime /
+                            homeData?.categoryWatchTime?.totalWatchtime) *
+                          100
+                        ).toFixed(1)}{" "}
+                        %
+                      </div>
+                    ))}
                 </div>
               </Tilt>
             </div>

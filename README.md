@@ -18,6 +18,15 @@
   <a href="https://github.com/dextify-org/vidya-app/issues">
     <img alt="GitHub issues" src="https://img.shields.io/github/issues/dextify-org/vidya-app" />
   </a>
+  <a href="https://x.com/vidya_server">
+    <img alt="X (Twitter)" src="https://img.shields.io/badge/X-vidya__server-black" />
+  </a>
+  <a href="https://www.reddit.com/r/VidyaMedia">
+    <img alt="Reddit" src="https://img.shields.io/badge/Reddit-r%2FVidyaMedia-FF4500?logo=reddit&logoColor=white" />
+  </a>
+  <a href="https://discord.gg/uavHJumK5v">
+    <img alt="Discord" src="https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white" />
+  </a>
 </p>
 
 ---
@@ -234,10 +243,11 @@ vidya-app/
 
 ## Related Repositories
 
-| Repo                                                              | Description                                        |
-| ----------------------------------------------------------------- | -------------------------------------------------- |
-| [dextify-org/vidya](https://github.com/dextify-org/vidya)         | VIDYA server + web client (Docker, Windows, Linux) |
-| [dextify-org/vidya-app](https://github.com/dextify-org/vidya-app) | This repository — Android & iOS mobile client      |
+| Repo                                                              | Description                                           |
+| ----------------------------------------------------------------- | ----------------------------------------------------- |
+| [dextify-org/vidya](https://github.com/dextify-org/vidya)         | VIDYA server + web client (Docker, Windows, Linux)    |
+| [dextify-org/vidya-app](https://github.com/dextify-org/vidya-app) | This repository — Android & iOS mobile client         |
+| [ghcr.io/dextify-org/vidya](https://ghcr.io/dextify-org/vidya)    | VIDYA server Docker image (GitHub Container Registry) |
 
 ---
 
