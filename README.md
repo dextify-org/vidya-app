@@ -47,18 +47,6 @@ This repository contains the **VIDYA mobile client** — an Android and iOS app 
   <a href="https://apps.apple.com/us/app/vidya-media-server/id6762642422"><img alt="Download on the App Store" src="https://github.com/user-attachments/assets/dee33522-0b39-4649-be71-eedff9dc219c" height="60" style="margin-left:8px;vertical-align:middle" /></a>
 </p>
 
-> Store listings are coming soon. Until then, use the options below.
-
-### Android
-
-Download the latest APK from the [Releases](https://github.com/dextify-org/vidya-app/releases) page and install it on your device.
-
-> You may need to enable **Install from unknown sources** in your device settings.
-
-### iOS
-
-iOS builds must be compiled from source using Xcode. See [Building for iOS](#building-for-ios) below.
-
 ---
 
 ## Connecting to Your Server
