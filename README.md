@@ -19,10 +19,7 @@
     <img alt="GitHub issues" src="https://img.shields.io/github/issues/dextify-org/vidya-app" />
   </a>
   <a href="https://x.com/vidya_server">
-    <img alt="X (Twitter)" src="https://img.shields.io/badge/X-vidya__server-black" />
-  </a>
-  <a href="https://www.reddit.com/r/VidyaMedia">
-    <img alt="Reddit" src="https://img.shields.io/badge/Reddit-r%2FVidyaMedia-FF4500?logo=reddit&logoColor=white" />
+    <img alt="X (Twitter)" src="https://img.shields.io/badge/X-vidya__server-black?logo=x&logoColor=white" />
   </a>
   <a href="https://discord.gg/uavHJumK5v">
     <img alt="Discord" src="https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white" />
