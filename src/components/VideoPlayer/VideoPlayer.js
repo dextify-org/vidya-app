@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useState, useRef, useCallback, memo, useEffect } from "react";
+import { Capacitor } from "@capacitor/core";
 import { StatusBar } from "@capacitor/status-bar";
 import axios from "../../api/axiosInstance";
 import {
@@ -347,6 +348,50 @@ const Controls = memo(
 
 const standardQualityPattern = /^\d{3,4}p$/;
 
+const HLS_MIME_TYPE = "application/vnd.apple.mpegurl";
+
+const currentPlatform = (() => {
+  try {
+    return Capacitor.getPlatform();
+  } catch (error) {
+    return "web";
+  }
+})();
+
+const isSafariOrIosBrowser = () => {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  const isIos =
+    /iPad|iPhone|iPod/.test(ua) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const isSafari =
+    /Safari\//.test(ua) &&
+    !/Chrome\/|Chromium|CriOS|Edg\/|EdgiOS|OPR\/|SamsungBrowser|Firefox\/|FxiOS/.test(
+      ua
+    );
+  return isIos || isSafari;
+};
+
+const detectNativeHls = () => {
+  if (currentPlatform === "ios") return true;
+  if (currentPlatform !== "web") return false;
+
+  if (typeof document === "undefined") return false;
+  try {
+    return (
+      isSafariOrIosBrowser() &&
+      document.createElement("video").canPlayType(HLS_MIME_TYPE) !== ""
+    );
+  } catch (error) {
+    return false;
+  }
+};
+
+const nativeHlsSupported = detectNativeHls();
+
+const isHlsSource = (src) =>
+  typeof src === "string" && src.includes("/api/course/hls/");
+
 const isPresetProfile = (profile) =>
   profile.kind === "transcode" && !profile.isOriginal;
 
@@ -447,6 +492,12 @@ const VideoPlayer = ({
   const shouldResumeRef = useRef(false);
   const hasPlayedRef = useRef(false);
   const autoStateRef = useRef({ lastSwitch: 0, stallCount: 0, lastStall: 0 });
+  const viewerIdRef = useRef(
+    typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+      ? crypto.randomUUID()
+      : `viewer-${Math.random().toString(36).slice(2)}`
+  );
+  const hlsFallbackRef = useRef(false);
   const seekThreshold = 1;
 
   const [state, setState] = useState({
@@ -528,9 +579,15 @@ const VideoPlayer = ({
       const src =
         resolved.kind === "direct"
           ? `${serverIP}/api/course/stream/${LectureId}?token=${token}`
-          : `${serverIP}/api/course/transcode/${LectureId}?profile=${encodeURIComponent(
-              resolved.id
-            )}&start=${start.toFixed(2)}&token=${token}`;
+          : nativeHlsSupported && !hlsFallbackRef.current
+            ? `${serverIP}/api/course/hls/${LectureId}/playlist.m3u8?profile=${encodeURIComponent(
+                resolved.id
+              )}&start=${start.toFixed(2)}&viewer=${encodeURIComponent(
+                viewerIdRef.current
+              )}&token=${token}`
+            : `${serverIP}/api/course/transcode/${LectureId}?profile=${encodeURIComponent(
+                resolved.id
+              )}&start=${start.toFixed(2)}&token=${token}`;
 
       const sameSource = src === videoSrcRef.current;
       const video = videoRef.current;
@@ -962,6 +1019,33 @@ const VideoPlayer = ({
         return;
       }
 
+      if (isHlsSource(videoSrcRef.current)) {
+        const hlsOffset = sourceOffsetRef.current;
+        const producedEnd =
+          hlsOffset +
+          (video.seekable.length
+            ? video.seekable.end(video.seekable.length - 1)
+            : video.buffered.length
+              ? video.buffered.end(video.buffered.length - 1)
+              : 0);
+        const canSeekLocally =
+          video.readyState >= 1 &&
+          target >= hlsOffset - 0.25 &&
+          target <= producedEnd + 1;
+
+        if (canSeekLocally) {
+          previousTimeRef.current = target;
+          video.currentTime = Math.max(0, target - hlsOffset);
+          setState((prev) => ({ ...prev, currentTime: target }));
+          return;
+        }
+
+        applyStream(current?.quality || "auto", target, {
+          shouldPlay: !video.paused,
+        });
+        return;
+      }
+
       const offset = sourceOffsetRef.current;
       const bufferedEnd =
         offset +
@@ -1198,6 +1282,22 @@ const VideoPlayer = ({
       }));
     };
 
+    const handleError = () => {
+      const currentSrc = videoSrcRef.current;
+      if (hlsFallbackRef.current || !isHlsSource(currentSrc)) return;
+      if (video.error?.code !== 4) return;
+
+      hlsFallbackRef.current = true;
+      console.warn(
+        "HLS playback is not supported on this platform; falling back to the fMP4 stream"
+      );
+
+      const absolute = sourceOffsetRef.current + (video.currentTime || 0);
+      applyStream(stateRef.current?.quality || "auto", absolute, {
+        shouldPlay: true,
+      });
+    };
+
     video.addEventListener("timeupdate", handleTimeUpdate);
     video.addEventListener("progress", handleProgress);
     video.addEventListener("ended", handleVideoEnd);
@@ -1206,6 +1306,7 @@ const VideoPlayer = ({
     video.addEventListener("stalled", handleStall);
     video.addEventListener("play", handlePlay);
     video.addEventListener("pause", handlePause);
+    video.addEventListener("error", handleError);
 
     return () => {
       video.removeEventListener("timeupdate", handleTimeUpdate);
@@ -1216,12 +1317,14 @@ const VideoPlayer = ({
       video.removeEventListener("stalled", handleStall);
       video.removeEventListener("play", handlePlay);
       video.removeEventListener("pause", handlePause);
+      video.removeEventListener("error", handleError);
     };
   }, [
     handleTimeUpdate,
     handleProgress,
     handleVideoEnd,
     handleStall,
+    applyStream,
     subtitles,
     videoDuration,
   ]);
